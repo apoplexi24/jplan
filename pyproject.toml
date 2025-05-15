@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "jplan"
-version = "0.1.0"
+version = "1.0.0"
 description = "A command-line tool to schedule and execute Jupyter notebooks using cron"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 keywords = ["jupyter", "notebook", "cron", "scheduling", "papermill"]
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "apoplexi24", email = "shivanandanasharma@gmail.com" }
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -22,6 +22,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "papermill>=2.4.0",
@@ -32,19 +35,16 @@ dependencies = [
 jplan = "src.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/jplan"
-Documentation = "https://github.com/yourusername/jplan#readme"
-Repository = "https://github.com/yourusername/jplan.git"
-Issues = "https://github.com/yourusername/jplan/issues"
+Homepage = "https://github.com/apoplexi24/jplan"
+Documentation = "https://github.com/apoplexi24/jplan#readme"
+Repository = "https://github.com/apoplexi24/jplan.git"
+Issues = "https://github.com/apoplexi24/jplan/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
-
-[tool.hatch.build.hooks.custom]
-path = "build.py"
 
 [project.optional-dependencies]
 dev = [

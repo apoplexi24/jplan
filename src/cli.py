@@ -41,6 +41,10 @@ def main():
         "--log-file",
         help="Path to the log file (alternative to positional argument)"
     )
+    parser.add_argument(
+        "--working-dir",
+        help="Working directory for resolving relative paths (defaults to notebook directory)"
+    )
 
     args = parser.parse_args()
 
@@ -62,7 +66,8 @@ def main():
         output_dir=args.output_dir,
         parameters=parameters,
         kernel_name=args.kernel,
-        log_file=log_file
+        log_file=log_file,
+        working_dir=args.working_dir
     )
 
 if __name__ == "__main__":
