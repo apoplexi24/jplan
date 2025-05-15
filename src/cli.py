@@ -21,6 +21,11 @@ def main():
         help="Path to the Jupyter notebook to execute"
     )
     parser.add_argument(
+        "log_file",
+        nargs="?",
+        help="Path to the log file (optional)"
+    )
+    parser.add_argument(
         "--output-dir",
         help="Directory to save executed notebooks (defaults to same directory as input)"
     )
@@ -31,6 +36,10 @@ def main():
     parser.add_argument(
         "--kernel",
         help="Name of the kernel to use for execution"
+    )
+    parser.add_argument(
+        "--log-file",
+        help="Path to the log file (alternative to positional argument)"
     )
 
     args = parser.parse_args()
@@ -43,13 +52,17 @@ def main():
         except json.JSONDecodeError:
             parser.error("--parameters must be a valid JSON string")
 
+    # Use log file from either positional or keyword argument
+    log_file = args.log_file or args.log_file
+
     # Create cron job
     create_cron_job(
         notebook_path=args.notebook,
         schedule=args.schedule,
         output_dir=args.output_dir,
         parameters=parameters,
-        kernel_name=args.kernel
+        kernel_name=args.kernel,
+        log_file=log_file
     )
 
 if __name__ == "__main__":

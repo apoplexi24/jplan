@@ -37,12 +37,20 @@ jplan "0 * * * *" input.ipynb --kernel python3
 
 # Run notebook every 15 minutes
 jplan "*/15 * * * *" input.ipynb
+
+# Run notebook with custom output directory
+jplan "0 * * * *" input.ipynb --output-dir /path/to/output
+
+# Run notebook with parameters
+jplan "0 * * * *" input.ipynb --parameters '{"param1": "value1", "param2": 42}'
 ```
 
 The command takes the following arguments:
 - `schedule`: Cron schedule expression (e.g., "0 * * * *" for hourly)
 - `notebook`: Path to the input notebook file
 - `log_file`: (Optional) Path to the log file (can be specified as positional or --log-file argument)
+- `--output-dir`: (Optional) Directory to save executed notebooks
+- `--parameters`: (Optional) JSON string of parameters to pass to the notebook
 - `--kernel`: (Optional) Name of the kernel to use for execution
 
 ### Python API
@@ -52,12 +60,18 @@ You can also use the package programmatically:
 ```python
 from jplan.executor import execute_notebook
 
-# Execute a notebook
+# Execute a notebook with default settings
+execute_notebook(
+    input_path="path/to/input.ipynb"
+)
+
+# Execute a notebook with custom settings
 execute_notebook(
     input_path="path/to/input.ipynb",
-    output_path="path/to/output.ipynb",
-    parameters={"param1": "value1", "param2": 42},
-    kernel_name="python3"  # optional
+    output_path="path/to/output.ipynb",  # optional
+    parameters={"param1": "value1", "param2": 42},  # optional
+    kernel_name="python3",  # optional
+    log_file="path/to/output.log"  # optional
 )
 
 # Create a cron job
@@ -68,7 +82,8 @@ create_cron_job(
     schedule="0 * * * *",  # Run at the start of every hour
     output_dir="path/to/output",  # optional
     parameters={"param1": "value1"},  # optional
-    kernel_name="python3"  # optional
+    kernel_name="python3",  # optional
+    log_file="path/to/output.log"  # optional
 )
 ```
 
