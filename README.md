@@ -43,6 +43,9 @@ jplan "0 * * * *" input.ipynb --output-dir /path/to/output
 
 # Run notebook with parameters
 jplan "0 * * * *" input.ipynb --parameters '{"param1": "value1", "param2": 42}'
+
+# Run notebook with custom working directory for relative paths
+jplan "0 * * * *" input.ipynb --working-dir /path/to/data
 ```
 
 The command takes the following arguments:
@@ -52,6 +55,30 @@ The command takes the following arguments:
 - `--output-dir`: (Optional) Directory to save executed notebooks
 - `--parameters`: (Optional) JSON string of parameters to pass to the notebook
 - `--kernel`: (Optional) Name of the kernel to use for execution
+- `--working-dir`: (Optional) Working directory for resolving relative paths (defaults to notebook directory)
+
+### Relative Path Handling
+
+jplan automatically handles relative paths in your notebooks. When a notebook is executed:
+
+1. The working directory is set to the notebook's location by default
+2. You can specify a custom working directory using `--working-dir`
+3. All relative paths in the notebook are resolved relative to the working directory
+4. The original notebook is never modified (changes are made in a temporary copy)
+
+Example notebook code:
+```python
+import pandas as pd
+
+# These will all work correctly
+df1 = pd.read_csv('data.csv')  # Resolves to working_dir/data.csv
+df2 = pd.read_csv('./data.csv')  # Resolves to working_dir/data.csv
+df3 = pd.read_csv('../data.csv')  # Resolves to working_dir/../data.csv
+
+# You can also use the resolve_path helper
+from pathlib import Path
+file_path = resolve_path('data.csv')  # Gets absolute path
+```
 
 ### Python API
 
@@ -71,7 +98,8 @@ execute_notebook(
     output_path="path/to/output.ipynb",  # optional
     parameters={"param1": "value1", "param2": 42},  # optional
     kernel_name="python3",  # optional
-    log_file="path/to/output.log"  # optional
+    log_file="path/to/output.log",  # optional
+    working_dir="path/to/data"  # optional
 )
 
 # Create a cron job
@@ -83,7 +111,8 @@ create_cron_job(
     output_dir="path/to/output",  # optional
     parameters={"param1": "value1"},  # optional
     kernel_name="python3",  # optional
-    log_file="path/to/output.log"  # optional
+    log_file="path/to/output.log",  # optional
+    working_dir="path/to/data"  # optional
 )
 ```
 

@@ -2,6 +2,7 @@
 
 import logging
 import os
+import tempfile
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -15,13 +16,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def resolve_paths_in_notebook(notebook_path: Path, working_dir: Path) -> None:
+def resolve_paths_in_notebook(notebook_path: Path, working_dir: Path) -> Path:
     """
     Pre-process the notebook to resolve relative paths.
     
     Args:
         notebook_path: Path to the notebook file
         working_dir: Working directory for resolving relative paths
+        
+    Returns:
+        Path to the temporary processed notebook
     """
     # Read the notebook
     with open(notebook_path, 'r', encoding='utf-8') as f:
@@ -47,9 +51,15 @@ def resolve_path(path):
 """
                 cell.source = setup_code + "\n" + cell.source
 
-    # Write the modified notebook
-    with open(notebook_path, 'w', encoding='utf-8') as f:
+    # Create a temporary file for the processed notebook
+    temp_dir = tempfile.gettempdir()
+    temp_notebook = Path(temp_dir) / f"jplan_{notebook_path.stem}_processed{notebook_path.suffix}"
+    
+    # Write the modified notebook to the temporary file
+    with open(temp_notebook, 'w', encoding='utf-8') as f:
         nbf.write(nb, f)
+    
+    return temp_notebook
 
 def execute_notebook(
     input_path: str | Path,
@@ -98,18 +108,24 @@ def execute_notebook(
             logger.addHandler(file_handler)
 
         # Pre-process notebook to handle relative paths
-        resolve_paths_in_notebook(input_path, working_dir)
+        temp_notebook = resolve_paths_in_notebook(input_path, working_dir)
 
         logger.info(f"Executing notebook: {input_path}")
         logger.info(f"Working directory: {working_dir}")
         
-        pm.execute_notebook(
-            input_path=str(input_path),
-            output_path=str(output_path),
-            parameters=parameters or {},
-            kernel_name=kernel_name,
-        )
-        logger.info(f"Notebook execution completed. Output saved to: {output_path}")
+        try:
+            pm.execute_notebook(
+                input_path=str(temp_notebook),
+                output_path=str(output_path),
+                parameters=parameters or {},
+                kernel_name=kernel_name,
+            )
+            logger.info(f"Notebook execution completed. Output saved to: {output_path}")
+        finally:
+            # Clean up temporary notebook
+            if temp_notebook.exists():
+                temp_notebook.unlink()
+                
     except Exception as e:
         logger.error(f"Failed to execute notebook: {str(e)}")
         raise 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "jplan"
-version = "1.0.0"
+version = "1.1.0"
 description = "A command-line tool to schedule and execute Jupyter notebooks using cron"
 readme = "README.md"
 requires-python = ">=3.8"
